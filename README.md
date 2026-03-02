@@ -50,6 +50,50 @@ Then configure:
 - **WooCommerce 5.0+** (tested up to 9.0)
 - **Google reCAPTCHA v3** API
 
+---
+
+## 🇩🇪 Deutsch
+
+### Features
+
+- 🔒 Unsichtbarer reCAPTCHA v3 Schutz (kein Nutzer-Input nötig)
+- 🎚️ Konfigurierbarer Score-Schwellenwert
+- 🧪 Testmodus zum Einrichten (loggt nur, blockiert nicht)
+- 📋 Logging unter WooCommerce > Status > Logs
+- 🟢 Fail-Open: Wenn Google nicht erreichbar, werden echte Kunden durchgelassen
+- ☁️ Cloudflare-kompatible IP-Erkennung
+- 📦 HPOS-kompatibel
+
+### Einrichtung
+
+```bash
+# 1. Plugin-Ordner nach wp-content/plugins/ hochladen
+cp -r woo-recaptcha-checkout /path/to/wp-content/plugins/
+
+# 2. Plugin im WordPress Admin unter Plugins aktivieren
+```
+
+Dann konfigurieren:
+
+1. reCAPTCHA v3 Keys holen unter [google.com/recaptcha/admin](https://www.google.com/recaptcha/admin)
+2. Gehe zu **WooCommerce > Einstellungen > reCAPTCHA**
+3. **Site Key** und **Secret Key** eintragen
+4. **Aktiviert** ankreuzen und speichern
+5. Fertig!
+
+> **Tipp:** Zuerst den Testmodus aktivieren und ein paar Testbestellungen machen. Unter **WooCommerce > Status > Logs** (Quelle: `woo-recaptcha-checkout`) siehst du die Scores.
+
+### FAQ
+
+| Frage | Antwort |
+|-------|---------|
+| Müssen Kunden etwas anklicken? | Nein! reCAPTCHA v3 ist komplett unsichtbar. |
+| Was passiert wenn Google nicht erreichbar ist? | Bestellungen werden trotzdem durchgelassen (Fail-Open). |
+| Welchen Score-Schwellenwert nehmen? | Start mit 0.5. Bei vielen Bots auf 0.6–0.7 erhöhen. |
+| Block-Checkout Support? | Aktuell nur klassischer Checkout (Shortcode). Block-Checkout noch nicht unterstützt. |
+
+---
+
 ## License
 
 GPL-2.0+ — see [LICENSE](https://www.gnu.org/licenses/gpl-2.0.html)
