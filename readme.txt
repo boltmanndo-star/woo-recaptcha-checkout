@@ -9,9 +9,53 @@ WC tested up to: 9.0
 Stable tag: 1.1.0
 License: GPL-2.0+
 
-Schützt den WooCommerce Checkout mit unsichtbarem Google reCAPTCHA v3 gegen Bot-Bestellungen und Card-Testing-Attacken.
+Protects WooCommerce checkout with invisible Google reCAPTCHA v3 against bot orders and card-testing attacks.
 
-== Beschreibung ==
+== Description ==
+
+This plugin adds invisible Google reCAPTCHA v3 to the WooCommerce checkout. Customers won't notice a thing - no image puzzles, no clicking. Bots and card-testing attacks are automatically blocked.
+
+**Features:**
+* Invisible reCAPTCHA v3 protection (no user input required)
+* Configurable score threshold
+* Test mode for setup (logs only, does not block)
+* Logging under WooCommerce > Status > Logs
+* Fail-open: if Google is unreachable, real customers are let through
+* Cloudflare-compatible IP detection
+* HPOS compatible
+
+== Installation ==
+
+1. Upload the `woo-recaptcha-checkout` folder to `wp-content/plugins/`
+2. Activate the plugin in WordPress Admin under Plugins
+3. Get your Google reCAPTCHA v3 keys:
+   - Go to https://www.google.com/recaptcha/admin
+   - Select "reCAPTCHA v3"
+   - Enter your domain(s)
+   - Copy the Site Key and Secret Key
+4. Go to WooCommerce > Settings > reCAPTCHA and enter your keys
+5. Check "Enabled" and save
+6. Done!
+
+**Tip:** Enable test mode first and place a few test orders. Check the scores under WooCommerce > Status > Logs (source: woo-recaptcha-checkout).
+
+== FAQ ==
+
+= Do customers have to enter or click anything? =
+No! reCAPTCHA v3 is completely invisible. It analyzes behavior in the background.
+
+= What happens if Google is unreachable? =
+Orders will still go through (fail-open). Better to let a bot through than to block real customers.
+
+= What score threshold should I use? =
+Start with 0.5 (default). If you see many bots, increase to 0.6-0.7. Check the logs to understand the scores.
+
+= Does it work with the block checkout? =
+Currently only with the classic WooCommerce checkout (shortcode). The block-based checkout is not yet supported.
+
+---
+
+== Beschreibung (Deutsch) ==
 
 Dieses Plugin fügt Google reCAPTCHA v3 unsichtbar zum WooCommerce Checkout hinzu. Kunden merken nichts davon - keine Bilder auswählen, nichts anklicken. Bots und Card-Testing-Attacken werden automatisch blockiert.
 
@@ -24,7 +68,7 @@ Dieses Plugin fügt Google reCAPTCHA v3 unsichtbar zum WooCommerce Checkout hinz
 * Cloudflare-kompatible IP-Erkennung
 * HPOS-kompatibel
 
-== Installation ==
+== Installation (Deutsch) ==
 
 1. Plugin-Ordner `woo-recaptcha-checkout` nach `wp-content/plugins/` hochladen
 2. Plugin im WordPress Admin unter Plugins aktivieren
@@ -39,7 +83,7 @@ Dieses Plugin fügt Google reCAPTCHA v3 unsichtbar zum WooCommerce Checkout hinz
 
 **Tipp:** Zuerst den Testmodus aktivieren und ein paar Testbestellungen machen. Unter WooCommerce > Status > Logs (Quelle: woo-recaptcha-checkout) siehst du die Scores.
 
-== FAQ ==
+== FAQ (Deutsch) ==
 
 = Müssen Kunden etwas eingeben oder anklicken? =
 Nein! reCAPTCHA v3 ist komplett unsichtbar. Es analysiert das Verhalten im Hintergrund.
@@ -55,8 +99,11 @@ Aktuell nur mit dem klassischen WooCommerce Checkout (Shortcode). Der Block-basi
 
 == Changelog ==
 
+= 1.1.0 =
+* Version sync and bilingual readme
+
 = 1.0.0 =
-* Erste Version
-* reCAPTCHA v3 auf WooCommerce Checkout
-* Admin-Einstellungen unter WooCommerce > Settings > reCAPTCHA
-* Testmodus und Logging
+* Initial release
+* reCAPTCHA v3 on WooCommerce checkout
+* Admin settings under WooCommerce > Settings > reCAPTCHA
+* Test mode and logging
