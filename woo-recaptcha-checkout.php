@@ -55,8 +55,6 @@ function wrc_init() {
         return;
     }
 
-    require_once WRC_PLUGIN_DIR . 'includes/class-wrc-settings.php';
-
     // Settings tab
     add_filter( 'woocommerce_get_settings_pages', 'wrc_add_settings_page' );
 
@@ -119,6 +117,7 @@ function wrc_missing_wc_notice() {
 }
 
 function wrc_add_settings_page( $settings ) {
+    require_once WRC_PLUGIN_DIR . 'includes/class-wrc-settings.php';
     $settings[] = new WRC_Settings();
     return $settings;
 }
