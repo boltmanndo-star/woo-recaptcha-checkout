@@ -15,6 +15,7 @@ Schützt den WooCommerce Checkout mit unsichtbarem Google reCAPTCHA v3 gegen Bot
 - 🟢 Fail-open: if Google is unreachable, real customers are let through
 - ☁️ Cloudflare-compatible IP detection
 - 📦 HPOS compatible
+- 🛒 Works with standard checkout, One Page Checkout, and custom checkout pages
 
 ## Setup
 
@@ -42,7 +43,7 @@ Then configure:
 | Do customers have to click anything? | No! reCAPTCHA v3 is completely invisible. |
 | What if Google is unreachable? | Orders still go through (fail-open). |
 | What score threshold should I use? | Start with 0.5. Increase to 0.6–0.7 if needed. |
-| Block checkout support? | Classic checkout only (shortcode). Block checkout not yet supported. |
+| Block checkout support? | Classic checkout and One Page Checkout are supported. Block-based checkout not yet supported. |
 
 ## Tech Stack
 
@@ -63,6 +64,7 @@ Then configure:
 - 🟢 Fail-Open: Wenn Google nicht erreichbar, werden echte Kunden durchgelassen
 - ☁️ Cloudflare-kompatible IP-Erkennung
 - 📦 HPOS-kompatibel
+- 🛒 Funktioniert mit Standard-Checkout, One Page Checkout und Custom-Checkout-Seiten
 
 ### Einrichtung
 
@@ -90,7 +92,7 @@ Dann konfigurieren:
 | Müssen Kunden etwas anklicken? | Nein! reCAPTCHA v3 ist komplett unsichtbar. |
 | Was passiert wenn Google nicht erreichbar ist? | Bestellungen werden trotzdem durchgelassen (Fail-Open). |
 | Welchen Score-Schwellenwert nehmen? | Start mit 0.5. Bei vielen Bots auf 0.6–0.7 erhöhen. |
-| Block-Checkout Support? | Aktuell nur klassischer Checkout (Shortcode). Block-Checkout noch nicht unterstützt. |
+| Block-Checkout Support? | Klassischer Checkout und One Page Checkout werden unterstützt. Block-Checkout noch nicht. |
 
 ---
 

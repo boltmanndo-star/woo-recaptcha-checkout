@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce reCAPTCHA v3 Checkout
  * Plugin URI:  https://github.com/boltmanndo-star/woo-recaptcha-checkout
  * Description: Schützt den WooCommerce Checkout mit unsichtbarem Google reCAPTCHA v3 gegen Bot-Bestellungen und Card-Testing-Attacken.
- * Version:     1.1.0
+ * Version:     1.2.0
  * Author:      Benni
  * License:     GPL-2.0+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WRC_VERSION', '1.1.0' );
+define( 'WRC_VERSION', '1.2.0' );
 define( 'WRC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WRC_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
@@ -131,9 +131,13 @@ function wrc_plugin_action_links( $links ) {
 }
 
 // ─── Frontend: Load reCAPTCHA v3 ───────────────────────────────────────
+// Loaded on all frontend pages (Google recommends this for reCAPTCHA v3).
+// This ensures it works on standard checkout, One Page Checkout, and any
+// custom checkout implementation.
 
 function wrc_enqueue_recaptcha_script() {
-    if ( ! is_checkout() || is_order_received_page() ) {
+    // Skip order-received (thank you) page
+    if ( function_exists( 'is_order_received_page' ) && is_order_received_page() ) {
         return;
     }
 
@@ -175,14 +179,27 @@ function wrc_output_recaptcha_js() {
             if (el) el.value = token;
         }
 
-        // Pre-load token on page load for faster checkout
-        if (typeof grecaptcha !== 'undefined') {
+        function wrcExecute(callback) {
+            if (typeof grecaptcha === 'undefined') {
+                // reCAPTCHA not loaded yet, fail open
+                if (callback) callback();
+                return;
+            }
             grecaptcha.ready(function() {
                 grecaptcha.execute(siteKey, { action: 'woo_checkout' })
-                    .then(wrcSetToken)
-                    .catch(function() {});
+                    .then(function(token) {
+                        wrcSetToken(token);
+                        if (callback) callback();
+                    })
+                    .catch(function(err) {
+                        console.error('reCAPTCHA error:', err);
+                        if (callback) callback();
+                    });
             });
         }
+
+        // Pre-load token on page load for faster checkout
+        wrcExecute();
 
         // Refresh token on submit (tokens expire after 2 min)
         $(document.body).on('checkout_place_order', function() {
@@ -191,19 +208,9 @@ function wrc_output_recaptcha_js() {
                 return true;
             }
 
-            grecaptcha.ready(function() {
-                grecaptcha.execute(siteKey, { action: 'woo_checkout' })
-                    .then(function(token) {
-                        wrcSetToken(token);
-                        wrcTokenReady = true;
-                        $('form.checkout').trigger('submit');
-                    })
-                    .catch(function(err) {
-                        // Fail open: if reCAPTCHA JS fails, let checkout proceed
-                        console.error('reCAPTCHA error:', err);
-                        wrcTokenReady = true;
-                        $('form.checkout').trigger('submit');
-                    });
+            wrcExecute(function() {
+                wrcTokenReady = true;
+                $('form.checkout').trigger('submit');
             });
 
             return false;
