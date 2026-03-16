@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hypnose Spirale</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    color: #fff;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    opacity: 0.7;
+    animation: pulse-text 3s ease-in-out infinite;
+  }
+
+  canvas {
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 60px rgba(100, 0, 255, 0.3), 0 0 120px rgba(100, 0, 255, 0.1);
+  }
+
+  .controls {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .controls label {
+    font-size: 0.85rem;
+    opacity: 0.6;
+  }
+
+  .controls input[type="range"] {
+    width: 140px;
+    accent-color: #7b2ff7;
+  }
+
+  .hint {
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    opacity: 0.35;
+    animation: pulse-text 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-text {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.7; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Schau in die Spirale...</h1>
+<canvas id="spiral" width="500" height="500"></canvas>
+
+<div class="controls">
+  <label>Geschwindigkeit</label>
+  <input type="range" id="speed" min="0.2" max="3" step="0.1" value="1">
+  <label>Farbe</label>
+  <select id="colorScheme" style="background:#222;color:#fff;border:1px solid #444;padding:4px 8px;border-radius:4px;">
+    <option value="purple">Lila</option>
+    <option value="blue">Blau</option>
+    <option value="green">Grün</option>
+    <option value="rainbow">Regenbogen</option>
+  </select>
+</div>
+
+<p class="hint">Klicke auf die Spirale um die Richtung zu ändern</p>
+
+<script>
+const canvas = document.getElementById('spiral');
+const ctx = canvas.getContext('2d');
+const speedSlider = document.getElementById('speed');
+const colorSelect = document.getElementById('colorScheme');
+
+const size = canvas.width;
+const center = size / 2;
+let time = 0;
+let direction = 1;
+
+canvas.addEventListener('click', () => {
+  direction *= -1;
+});
+
+const colorSchemes = {
+  purple: (t, i) => {
+    const v = Math.sin(t + i * 0.15) * 0.5 + 0.5;
+    return `hsl(${270 + v * 30}, 80%, ${20 + v * 40}%)`;
+  },
+  blue: (t, i) => {
+    const v = Math.sin(t + i * 0.15) * 0.5 + 0.5;
+    return `hsl(${210 + v * 30}, 85%, ${15 + v * 45}%)`;
+  },
+  green: (t, i) => {
+    const v = Math.sin(t + i * 0.15) * 0.5 + 0.5;
+    return `hsl(${130 + v * 30}, 75%, ${15 + v * 35}%)`;
+  },
+  rainbow: (t, i) => {
+    const hue = (t * 50 + i * 15) % 360;
+    const v = Math.sin(t + i * 0.15) * 0.5 + 0.5;
+    return `hsl(${hue}, 80%, ${20 + v * 40}%)`;
+  }
+};
+
+function draw() {
+  const speed = parseFloat(speedSlider.value);
+  const scheme = colorSelect.value;
+  const getColor = colorSchemes[scheme];
+
+  time += 0.02 * speed * direction;
+
+  ctx.fillStyle = 'rgba(10, 10, 10, 0.15)';
+  ctx.fillRect(0, 0, size, size);
+
+  const arms = 6;
+  const maxRadius = center - 10;
+  const points = 80;
+
+  for (let arm = 0; arm < arms; arm++) {
+    const armOffset = (Math.PI * 2 / arms) * arm;
+
+    ctx.beginPath();
+    for (let i = 0; i < points; i++) {
+      const t = i / points;
+      const radius = t * maxRadius;
+      const angle = armOffset + t * Math.PI * 4 + time * 2;
+      const x = center + Math.cos(angle) * radius;
+      const y = center + Math.sin(angle) * radius;
+
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    }
+
+    ctx.strokeStyle = getColor(time, arm * 12);
+    ctx.lineWidth = 3 + Math.sin(time + arm) * 1.5;
+    ctx.stroke();
+  }
+
+  // Pulsierender Mittelpunkt
+  const pulseSize = 8 + Math.sin(time * 3) * 4;
+  const gradient = ctx.createRadialGradient(center, center, 0, center, center, pulseSize * 2);
+  gradient.addColorStop(0, getColor(time, 0));
+  gradient.addColorStop(1, 'transparent');
+  ctx.beginPath();
+  ctx.arc(center, center, pulseSize, 0, Math.PI * 2);
+  ctx.fillStyle = gradient;
+  ctx.fill();
+
+  // Konzentrische pulsierende Ringe
+  for (let r = 0; r < 5; r++) {
+    const ringRadius = 40 + r * 45 + Math.sin(time * 1.5 + r) * 10;
+    ctx.beginPath();
+    ctx.arc(center, center, ringRadius, 0, Math.PI * 2);
+    ctx.strokeStyle = getColor(time, r * 8);
+    ctx.globalAlpha = 0.15 + Math.sin(time + r * 0.7) * 0.1;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>
